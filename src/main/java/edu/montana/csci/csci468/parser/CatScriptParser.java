@@ -119,11 +119,82 @@ public class CatScriptParser {
     //============================================================
 
     private Statement parseProgramStatement() {
+        Statement functionDefStatement = parseFunctionDefinitionStatement();
+        if (functionDefStatement != null)
+        {
+            return functionDefStatement;
+        }
+        return new SyntaxErrorStatement(tokens.consumeToken());
+    }
+
+    private Statement parseFunctionDefinitionStatement()
+    {
+        if(tokens.match(FUNCTION))
+        {
+            FunctionDefinitionStatement def = new FunctionDefinitionStatement();
+            def.setStart(tokens.consumeToken());
+            //TODO: require an identifier (name)
+            //TODO: require a left paren
+            //TODO: require (
+            //TODO: some num of args(comma seperated)
+            //TODO: do while (tokens.matchAndConsume(","))
+            //TODO: require )
+            //TODO: optionally math :
+            if(tokens.match(COLON))
+            {
+                parseTypeExpression();
+            }
+
+            //TODO: require {
+            //body of a function declaration
+            this.currentFunctionDefinition = def;
+            while(!tokens.match(RIGHT_BRACE))
+            {
+                parseStatement();
+            }
+            this.currentFunctionDefinition = null;
+            //TODO require }
+        }
+    }
+
+    private Expression parseTypeExpression()
+    {
+        TypeLiteral typeLiteral = new TypeLiteral();
+        //TODO: recursive call here to deal with lists
+        typeLiteral.setType();
+        return typeLiteral;
+    }
+    private Statement parseStatement() {
         Statement printStmt = parsePrintStatement();
         if (printStmt != null) {
             return printStmt;
         }
+        Statement returnStmt = parseReturnStatement();
+        if (returnStmt != null) {
+            return returnStmt;
+        }
         return new SyntaxErrorStatement(tokens.consumeToken());
+    }
+
+    private Statement parseReturnStatement()
+    {
+        if(this.currentFunctionDefinition != null)
+        {
+            if (tokens.match(RETURN))
+            {
+
+                ReturnStatement returnStatement = new ReturnStatement();
+                ReturnStatement.setStart(tokens.consumeToken());
+
+                require(LEFT_PAREN, returnStatement);
+                returnStatement.setExpression(parseExpression());
+                returnStatement.setEnd(require(RIGHT_PAREN, returnStatement));
+
+                return returnStatement;
+            } else {
+                return null;
+            }
+        }
     }
 
     private Statement parsePrintStatement() {
