@@ -2,6 +2,7 @@ package edu.montana.csci.csci468.parser.statements;
 
 import edu.montana.csci.csci468.bytecode.ByteCodeGenerator;
 import edu.montana.csci.csci468.eval.CatscriptRuntime;
+import edu.montana.csci.csci468.eval.ReturnException;
 import edu.montana.csci.csci468.parser.CatscriptType;
 import edu.montana.csci.csci468.parser.ErrorType;
 import edu.montana.csci.csci468.parser.ParseError;
@@ -41,9 +42,22 @@ public class ReturnStatement extends Statement {
     //==============================================================
     // Implementation
     //==============================================================
+
+    //def foo() : string {
+    //  if(true){
+    //      return "foo"
+    //  } else {
+    //      print ("foo")
+    //      return "baz"
+
     @Override
     public void execute(CatscriptRuntime runtime) {
-        super.execute(runtime);
+        Object value = null;
+        if(expression != null)
+        {
+            //evaluate that and set the value to the result
+        }
+        throw new ReturnException(value);
     }
 
     @Override

@@ -105,8 +105,6 @@ argument_list = [ expression , { ',' , expression } ]
 
 type_expression = 'int' | 'string' | 'bool' | 'object' | 'list' [, '<' , type_expression, '>']
 
-```
-
 ### CatScript Types
 
 CatScript is statically typed, with a small type system as follows
