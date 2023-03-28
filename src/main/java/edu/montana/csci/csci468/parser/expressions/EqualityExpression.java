@@ -57,7 +57,6 @@ public class EqualityExpression extends Expression {
     public Object evaluate(CatscriptRuntime runtime) {
         Object lhsValue = (Object) leftHandSide.evaluate(runtime);
         Object rhsValue = (Object) rightHandSide.evaluate(runtime);
-        //TODO handle string case
         if (isEqual()) {
             return Objects.equals(lhsValue, rhsValue);
         } else {

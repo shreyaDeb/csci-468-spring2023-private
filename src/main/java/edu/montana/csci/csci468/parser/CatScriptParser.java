@@ -142,10 +142,9 @@ public class CatScriptParser {
 
             require(RIGHT_PAREN, parseStatement());
             TypeLiteral typeliteral = null;
-            if(tokens.matchAndConsume(COLON)){
+            if(tokens.matchAndConsume(COLON)) {
 
             }
-            //funcDef.setType();
             LinkedList<Statement> statements = new LinkedList<>();
             currentFunctionDefinition = funcDef;
             while(!tokens.match(RIGHT_BRACE) && tokens.hasMoreTokens()){
@@ -312,12 +311,24 @@ public class CatScriptParser {
                 final AssignmentStatement assignmentStmt = new AssignmentStatement();
                 assignmentStmt.setStart(start);
                 assignmentStmt.setVariableName(start.getStringValue());
+                require(EQUAL, assignmentStmt);
                 assignmentStmt.setExpression(parseExpression());
-                assignmentStmt.setEnd(tokens.lastToken());
                 return assignmentStmt;
             } else if (tokens.matchAndConsume(LEFT_PAREN)) {
-                FunctionCallExpression expression = parseFunctionCallExpression(start);
-                return null;
+                List<Expression> arguments = new LinkedList<>();
+                while (!tokens.match(RIGHT_PAREN) && tokens.hasMoreTokens()){
+                    if (tokens.match(COMMA)){
+                        tokens.consumeToken();
+                    } else {
+                        Expression expression = parseExpression();
+                        arguments.add(expression);
+                    }
+                }
+
+                FunctionCallStatement functionCallStatement = new FunctionCallStatement(new FunctionCallExpression(start.getStringValue(), arguments));
+                functionCallStatement.setStart(start);
+                require(RIGHT_PAREN, functionCallStatement);
+                return functionCallStatement;
             }
         }
         return null;
@@ -576,31 +587,38 @@ public class CatScriptParser {
     }
 
     private TypeLiteral parseTypeLiteral() {
+        TypeLiteral typeLiteral = new TypeLiteral();
         if (tokens.match("int")) {
-            TypeLiteral typeLiteral = new TypeLiteral();
             typeLiteral.setType(CatscriptType.INT);
             typeLiteral.setToken(tokens.consumeToken());
             return typeLiteral;
         } else if (tokens.match("string")) {
-            TypeLiteral typeLiteral = new TypeLiteral();
             typeLiteral.setType(CatscriptType.STRING);
             typeLiteral.setToken(tokens.consumeToken());
             return typeLiteral;
         } else if (tokens.match("bool")) {
-            TypeLiteral typeLiteral = new TypeLiteral();
             typeLiteral.setType(CatscriptType.BOOLEAN);
             typeLiteral.setToken(tokens.consumeToken());
             return typeLiteral;
         } else if (tokens.match("object")) {
-            TypeLiteral typeLiteral = new TypeLiteral();
             typeLiteral.setType(CatscriptType.OBJECT);
             typeLiteral.setToken(tokens.consumeToken());
             return typeLiteral;
-        } else if (tokens.match("list")){
-            TypeLiteral typeLiteral = new TypeLiteral();
+        } else if (tokens.getCurrentToken().getStringValue().equals("void")) {
+            typeLiteral.setType(CatscriptType.VOID);
+        } else if (tokens.getCurrentToken().getStringValue().equals("list")) {
+            tokens.consumeToken();
+            if (tokens.matchAndConsume(LESS)){
+                typeLiteral.setType(new CatscriptType.ListType(parseTypeExpression().getType()));
+                tokens.consumeToken();
+            } else {
+                typeLiteral.setType( new CatscriptType.ListType(CatscriptType.OBJECT));
+                return typeLiteral;
+            }
+        } else {
             typeLiteral.setType(CatscriptType.OBJECT);
-            typeLiteral.setToken(tokens.consumeToken());
-            return typeLiteral;
-        } return parseTypeLiteral();
+        }
+        tokens.consumeToken();
+        return typeLiteral;
     }
 }
