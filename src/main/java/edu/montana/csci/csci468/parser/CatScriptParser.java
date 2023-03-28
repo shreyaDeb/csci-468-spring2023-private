@@ -311,7 +311,6 @@ public class CatScriptParser {
                 final AssignmentStatement assignmentStmt = new AssignmentStatement();
                 assignmentStmt.setStart(start);
                 assignmentStmt.setVariableName(start.getStringValue());
-                require(EQUAL, assignmentStmt);
                 assignmentStmt.setExpression(parseExpression());
                 return assignmentStmt;
             } else if (tokens.matchAndConsume(LEFT_PAREN)) {
