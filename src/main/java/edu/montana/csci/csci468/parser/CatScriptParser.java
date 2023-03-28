@@ -317,7 +317,6 @@ public class CatScriptParser {
                 return assignmentStmt;
             } else if (tokens.matchAndConsume(LEFT_PAREN)) {
                 FunctionCallExpression expression = parseFunctionCallExpression(start);
-
                 return null;
             }
         }
@@ -326,7 +325,26 @@ public class CatScriptParser {
 
     private FunctionCallExpression parseFunctionCallExpression(Token start)
     {
-        return null;
+        if (tokens.match(LEFT_PAREN)) {
+            tokens.consumeToken();
+            if (tokens.match(RIGHT_PAREN)) {
+                List<Expression> argumentList = parseArgumentList();
+                FunctionCallExpression functionCallExpression = new FunctionCallExpression(start.getStringValue(), argumentList);
+                return functionCallExpression;
+            } else {
+                List<Expression> argumentList = parseArgumentList();
+                if (tokens.match(RIGHT_PAREN)) {
+                    FunctionCallExpression functionCallExpression = new FunctionCallExpression(start.getStringValue(), argumentList);
+                    return functionCallExpression;
+                } else {
+                    FunctionCallExpression functionCallExpression = new FunctionCallExpression(start.getStringValue(), argumentList);
+                    functionCallExpression.addError(ErrorType.UNTERMINATED_ARG_LIST);
+                    return functionCallExpression;
+                }
+            }
+        } else {
+            return null;
+        }
     }
 
 

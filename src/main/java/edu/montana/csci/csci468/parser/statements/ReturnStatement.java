@@ -55,7 +55,7 @@ public class ReturnStatement extends Statement {
         Object value = null;
         if(expression != null)
         {
-            //evaluate that and set the value to the result
+            value = expression.evaluate(runtime); //evaluate that and set the value to the result
         }
         throw new ReturnException(value);
     }

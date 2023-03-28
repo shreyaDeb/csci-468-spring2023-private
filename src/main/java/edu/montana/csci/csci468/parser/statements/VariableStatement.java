@@ -58,8 +58,6 @@ public class VariableStatement extends Statement {
             } else {
                 type = expression.getType();
             }
-            // TODO if there is an explicit type, ensure it is correct
-            //      if not, infer the type from the right hand side expression
             symbolTable.registerSymbol(variableName, type);
         }
     }
@@ -73,7 +71,7 @@ public class VariableStatement extends Statement {
     //==============================================================
     @Override
     public void execute(CatscriptRuntime runtime) {
-        super.execute(runtime);
+        runtime.setValue(variableName, expression.evaluate(runtime));
     }
 
     @Override
