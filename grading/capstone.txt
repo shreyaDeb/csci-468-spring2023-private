@@ -1,4 +1,1 @@
-Errors:
-
-- Missing source zip
-- Missing shreya_deb_portfolio.pdf
+All Good
